@@ -1,16 +1,23 @@
-package com.alimonapps.donotsleep
+package com.alimonapps.donotsleep.ui.home
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.alimonapps.donotsleep.databinding.ActivityMainBinding
+import com.alimonapps.donotsleep.Condition
+import com.alimonapps.donotsleep.EyesTracker
+import com.alimonapps.donotsleep.FaceTrackerDaemon
+import com.alimonapps.donotsleep.databinding.HomeFragmentBinding
+import com.alimonapps.donotsleep.ui.MainViewModel
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.MultiProcessor
 import com.google.android.gms.vision.face.FaceDetector
@@ -18,40 +25,60 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
 
-private const val TAG = "MainActivity"
+private const val TAG = "HomeFragment"
 
-class MainActivity : AppCompatActivity() {
+class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
-    lateinit var binding: ActivityMainBinding
+    private val viewModel: HomeViewModel by viewModel()
+    private val sharedViewMode: MainViewModel by sharedViewModel()
+    private lateinit var binding: HomeFragmentBinding
+    private lateinit var eyesTracker: EyesTracker
+
+
     var flag = false
     lateinit var cameraSource: CameraSource
     val CAMERA_RQ = 101
-    private lateinit var countDownTimer: CountDownTimer
     private lateinit var myScope: CoroutineScope
-    var seconds: Long = 0L
     var counter = MutableLiveData(0)
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = HomeFragmentBinding.inflate(inflater)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = viewModel
+        eyesTracker = EyesTracker(this)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        clickOnStartButton()
 
-        requestPermission()
+        return binding.root
 
+    }
+
+    private fun clickOnStartButton() {
+        binding.button2.setOnClickListener {
+            requestPermission()
+        }
     }
 
     private fun requestPermission() {
         if (ActivityCompat.checkSelfPermission(
-                applicationContext,
+                requireContext(),
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_RQ)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_RQ
+            )
             Toast.makeText(
-                this,
+                requireContext(),
                 "Permission not granted!\n Grant permission and restart app",
                 Toast.LENGTH_SHORT
             ).show()
@@ -68,16 +95,16 @@ class MainActivity : AppCompatActivity() {
 
     //Method to create camera source from faceFactoryDaemon class
     private fun initCameraSource() {
-        val detector = FaceDetector.Builder(this).setTrackingEnabled(true)
+        val detector = FaceDetector.Builder(requireContext()).setTrackingEnabled(true)
 
             .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS).setMode(FaceDetector.FAST_MODE)
             .build()
 
         detector.setProcessor(
-            MultiProcessor.Builder(FaceTrackerDaemon(this@MainActivity)).build()
+            MultiProcessor.Builder(FaceTrackerDaemon(this)).build()
         )
 
-        cameraSource = CameraSource.Builder(this, detector)
+        cameraSource = CameraSource.Builder(requireContext(), detector)
             .setRequestedPreviewSize(1024, 768)
             .setFacing(CameraSource.CAMERA_FACING_FRONT)
             .setRequestedFps(30.0f)
@@ -85,27 +112,26 @@ class MainActivity : AppCompatActivity() {
 
         try {
             if (ActivityCompat.checkSelfPermission(
-                    applicationContext,
+                    requireContext(),
                     Manifest.permission.CAMERA
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 requestPermission()
                 return
             }
-            cameraSource.start();
+            cameraSource.start()
         } catch (e: IOException) {
-            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
             e.printStackTrace()
         }
     }
 
     //Update view
-    fun updateMainView(condition: Condition) {
+    override fun onChangeEye(condition: Condition) {
         when (condition) {
             Condition.USER_EYES_OPEN -> {
                 setBackgroundGreen()
                 binding.userText.text = "Open eyes detected"
-                if (this::countDownTimer.isInitialized) countDownTimer.cancel()
                 if (this::myScope.isInitialized) myScope.cancel()
                 counter.postValue(0)
 
@@ -119,10 +145,10 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, "updateMainView: ${counter.value}")
 
                 myScope.launch {
-                    counter.observe(this@MainActivity, object : Observer<Int> {
+                    counter.observe(viewLifecycleOwner, object : Observer<Int> {
                         override fun onChanged(t: Int?) {
                             if (t == 200) {
-                                Toast.makeText(applicationContext, "WAKE UP!", Toast.LENGTH_SHORT)
+                                Toast.makeText(requireContext(), "WAKE UP!", Toast.LENGTH_SHORT)
                                     .show()
                             }
                             counter.removeObserver(this)
@@ -134,31 +160,13 @@ class MainActivity : AppCompatActivity() {
             Condition.FACE_NOT_FOUND -> {
                 setBackgroundRed()
                 binding.userText.text = "User not found"
-                if (this::countDownTimer.isInitialized) countDownTimer.cancel()
                 if (this::myScope.isInitialized) myScope.cancel()
                 counter.postValue(0)
 
             }
         }
-
     }
 
-    private fun setupCountDownTimer(countDownTime: Long) {
-        countDownTimer = object : CountDownTimer(countDownTime, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                seconds = millisUntilFinished / 1000
-
-            }
-
-            override fun onFinish() {
-                Log.e(TAG, "onFinish: $seconds")
-                if (seconds.toInt() == 5) {
-                    Toast.makeText(applicationContext, "wake up", Toast.LENGTH_SHORT).show()
-                } else return
-            }
-        }
-        countDownTimer.start()
-    }
 
     private fun setBackgroundGrey() {
         binding.background.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
@@ -180,14 +188,12 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         try {
             if (ActivityCompat.checkSelfPermission(
-                    this,
+                    requireContext(),
                     Manifest.permission.CAMERA
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 requestPermission()
-                return
             }
-            cameraSource.start()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -196,15 +202,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        if (this::cameraSource.isInitialized) {
-            cameraSource.stop()
-        }
-        setBackgroundGrey()
+        if (this::cameraSource.isInitialized) cameraSource.stop()
+        if (this::myScope.isInitialized) myScope.cancel()
+//        if (this::cameraSource.isInitialized) cameraSource.release()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        cameraSource.release()
+        if (this::cameraSource.isInitialized) cameraSource.release()
+        if (this::cameraSource.isInitialized) cameraSource.stop()
     }
 
     override fun onRequestPermissionsResult(
@@ -216,7 +222,7 @@ class MainActivity : AppCompatActivity() {
 
         fun innerCheck(name: String) {
             if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(applicationContext, "$name permission refused", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "$name permission refused", Toast.LENGTH_SHORT)
                     .show()
             } else {
                 initApp()
@@ -227,4 +233,5 @@ class MainActivity : AppCompatActivity() {
             CAMERA_RQ -> innerCheck("camera")
         }
     }
+
 }
