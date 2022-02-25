@@ -3,7 +3,6 @@ package com.alimonapps.donotsleep.ui.home
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -39,9 +38,9 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     private lateinit var eyesTracker: EyesTracker
 
 
-    var flag = false
-    lateinit var cameraSource: CameraSource
-    val CAMERA_RQ = 101
+    private var flag = false
+    private lateinit var cameraSource: CameraSource
+    private val CAMERA_RQ = 101
     private lateinit var myScope: CoroutineScope
     var counter = MutableLiveData(0)
 
@@ -54,11 +53,14 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         binding.viewModel = viewModel
         eyesTracker = EyesTracker(this)
 
+        Log.e(TAG, "onCreate: on create oomad")
+
         clickOnStartButton()
 
         return binding.root
 
     }
+
 
     private fun clickOnStartButton() {
         binding.button2.setOnClickListener {
@@ -104,6 +106,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
             MultiProcessor.Builder(FaceTrackerDaemon(this)).build()
         )
 
+
         cameraSource = CameraSource.Builder(requireContext(), detector)
             .setRequestedPreviewSize(1024, 768)
             .setFacing(CameraSource.CAMERA_FACING_FRONT)
@@ -120,6 +123,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
                 return
             }
             cameraSource.start()
+            cameraSource.previewSize
         } catch (e: IOException) {
             Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
             e.printStackTrace()
@@ -186,6 +190,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     override fun onResume() {
         super.onResume()
+        Log.e(TAG, "onResume: on resume oomad")
         try {
             if (ActivityCompat.checkSelfPermission(
                     requireContext(),
@@ -200,6 +205,22 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        Log.e(TAG, "onStart: on start oomad")
+        try {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.CAMERA
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermission()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         if (this::cameraSource.isInitialized) cameraSource.stop()
@@ -209,6 +230,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     override fun onDestroy() {
         super.onDestroy()
+
         if (this::cameraSource.isInitialized) cameraSource.release()
         if (this::cameraSource.isInitialized) cameraSource.stop()
     }
