@@ -79,11 +79,6 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
                 arrayOf(Manifest.permission.CAMERA),
                 CAMERA_RQ
             )
-            Toast.makeText(
-                requireContext(),
-                "Permission not granted!\n Grant permission and restart app",
-                Toast.LENGTH_SHORT
-            ).show()
         } else {
             initApp()
         }
