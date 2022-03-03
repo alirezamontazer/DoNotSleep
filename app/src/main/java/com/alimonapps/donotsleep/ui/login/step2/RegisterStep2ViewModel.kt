@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 
 class RegisterStep2ViewModel : ViewModel() {
 
-    var phoneNumberEmergency = MutableLiveData<String>()
+    var phoneNumberEmergency = MutableLiveData("")
     val isShowLoading = MutableLiveData(false)
 
 

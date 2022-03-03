@@ -7,5 +7,13 @@
     <fragment
         android:id="@+id/registerBaseFragment"
         android:name="com.alimonapps.donotsleep.ui.login.base.RegisterBaseFragment"
-        android:label="RegisterBaseFragment" />
+        android:label="RegisterBaseFragment" >
+        <action
+            android:id="@+id/action_registerBaseFragment_to_confirmDialogFragment"
+            app:destination="@id/confirmDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/confirmDialogFragment"
+        android:name="com.alimonapps.donotsleep.ui.login.confirmdialog.ConfirmDialogFragment"
+        android:label="ConfirmDialogFragment" />
 </navigation>

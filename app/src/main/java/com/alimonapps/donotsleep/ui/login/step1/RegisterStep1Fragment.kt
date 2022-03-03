@@ -40,6 +40,7 @@ class RegisterStep1Fragment : Fragment() {
     private fun clickOnRegister() {
         binding.btnReceive.setOnClickListener {
             checkTextValidity()
+            Log.e(TAG, "clickOnRegister: ${viewModel.phoneNumber.value}")
             if (checkTextValidity()) {
                 viewModel.isShowLoading.value = true
                 goToNextPage()

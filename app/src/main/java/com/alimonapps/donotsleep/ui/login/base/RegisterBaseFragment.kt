@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.alimonapps.donotsleep.R
 import com.alimonapps.donotsleep.databinding.RegisterBaseFragmentBinding
@@ -31,8 +33,17 @@ class RegisterBaseFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         setupViewPager()
+        goToMainActivityChecker()
 
         return binding.root
+    }
+
+    private fun goToMainActivityChecker() {
+        viewModel.openMainActivity.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                findNavController().navigate(RegisterBaseFragmentDirections.actionRegisterBaseFragmentToConfirmDialogFragment())
+            }
+        })
     }
 
     private fun setupViewPager() {
