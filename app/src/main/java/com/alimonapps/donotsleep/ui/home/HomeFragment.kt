@@ -2,6 +2,8 @@ package com.alimonapps.donotsleep.ui.home
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,10 +22,8 @@ import com.alimonapps.donotsleep.ui.MainViewModel
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.MultiProcessor
 import com.google.android.gms.vision.face.FaceDetector
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
@@ -34,8 +34,12 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     private val viewModel: HomeViewModel by viewModel()
     private val sharedViewMode: MainViewModel by sharedViewModel()
+    private val mMediaPlayer: MediaPlayer by inject()
+    private var isMediaPlayerStarted = false
     private lateinit var binding: HomeFragmentBinding
     private lateinit var eyesTracker: EyesTracker
+    private var myDisplayTime: Long = 500
+    private var myRestTime: Long = 500
 
 
     private var flag = false
@@ -132,6 +136,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
                 setBackgroundGreen()
                 binding.userText.text = "Open eyes detected"
                 if (this::myScope.isInitialized) myScope.cancel()
+                if (isMediaPlayerStarted) mMediaPlayer.stop()
                 counter.postValue(0)
 
             }
@@ -145,25 +150,49 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
                 myScope.launch {
                     counter.observe(viewLifecycleOwner, object : Observer<Int> {
-                        override fun onChanged(t: Int?) {
-                            if (t == 200) {
+                        override fun onChanged(t: Int) {
+                            if (t == 100) {
                                 Toast.makeText(requireContext(), "WAKE UP!", Toast.LENGTH_SHORT)
                                     .show()
+                                startMediaPlayer()
+                            }
+                            if (t >= 100) {
+                                setBackgroundRed()
+                                mMediaPlayer.isLooping = true
                             }
                             counter.removeObserver(this)
                         }
-
                     })
                 }
             }
             Condition.FACE_NOT_FOUND -> {
-                setBackgroundRed()
+                setBackgroundGrey()
                 binding.userText.text = "User not found"
                 if (this::myScope.isInitialized) myScope.cancel()
+                if (isMediaPlayerStarted) mMediaPlayer.stop()
                 counter.postValue(0)
 
             }
         }
+    }
+
+    private fun startMediaPlayer() {
+        val voiceId: Int =
+            resources.getIdentifier("alarm", "raw", requireContext().packageName)
+        val voicePath =
+            Uri.parse("android.resource://com.alimonapps.donotsleep/$voiceId")
+        try {
+            mMediaPlayer.reset()
+            mMediaPlayer.setDataSource(requireContext(), voicePath)
+            mMediaPlayer.prepare()
+
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        mMediaPlayer.start()
+        isMediaPlayerStarted = true
     }
 
 
@@ -216,11 +245,19 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (this::cameraSource.isInitialized) cameraSource.stop()
+        if (this::myScope.isInitialized) myScope.cancel()
+        if (isMediaPlayerStarted) mMediaPlayer.stop()
+
+    }
+
     override fun onPause() {
         super.onPause()
         if (this::cameraSource.isInitialized) cameraSource.stop()
         if (this::myScope.isInitialized) myScope.cancel()
-//        if (this::cameraSource.isInitialized) cameraSource.release()
+        mMediaPlayer.stop()
     }
 
     override fun onDestroy() {
@@ -228,6 +265,10 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
         if (this::cameraSource.isInitialized) cameraSource.release()
         if (this::cameraSource.isInitialized) cameraSource.stop()
+        if (isMediaPlayerStarted) {
+            mMediaPlayer.stop()
+            mMediaPlayer.release()
+        }
     }
 
     override fun onRequestPermissionsResult(

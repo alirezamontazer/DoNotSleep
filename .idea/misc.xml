@@ -4,9 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Projects/DoNotSleep/app/src/main/res/drawable/navigation_border_up.xml" value="0.1085" />
+        <entry key="..\:/Projects/DoNotSleep/app/src/main/res/layout/activity_login.xml" value="0.18802083333333333" />
         <entry key="..\:/Projects/DoNotSleep/app/src/main/res/layout/activity_main.xml" value="0.16" />
         <entry key="..\:/Projects/DoNotSleep/app/src/main/res/layout/activity_splash.xml" value="0.1" />
         <entry key="..\:/Projects/DoNotSleep/app/src/main/res/layout/home_fragment.xml" value="0.20416666666666666" />
+        <entry key="..\:/Projects/DoNotSleep/app/src/main/res/layout/register_base_fragment.xml" value="0.22" />
+        <entry key="..\:/Projects/DoNotSleep/app/src/main/res/layout/register_step1_fragment.xml" value="0.18802083333333333" />
+        <entry key="..\:/Projects/DoNotSleep/app/src/main/res/layout/register_step2_fragment.xml" value="0.18802083333333333" />
         <entry key="..\:/Projects/DoNotSleep/app/src/main/res/layout/setting_fragment.xml" value="0.19010416666666666" />
         <entry key="..\:/Projects/DoNotSleep/app/src/main/res/menu/bottom_menu.xml" value="0.16" />
       </map>
