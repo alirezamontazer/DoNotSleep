@@ -8,11 +8,69 @@
     <color name="secondaryDarkColor">#c6491c</color>
     <color name="primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor">#000000</color>
-    <color name="text_gray">#b4b4b4</color>
     <color name="yellow">#FFDD4F</color>
-    <color name="white">#FFFFFF</color>
-    <color name="green">#4fc6ad</color>
+
+
+    <color name="colorPrimary">#33df8d</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <!--    gray-->
+    <color name="rating_gray">#edeffb</color>
+    <color name="gray">#9d9d9d</color>
+    <color name="lightgray">#f7f8fc</color>
+    <color name="lightgray2">#F0F0F1</color>
+    <color name="lightgray3">#F5F9FC</color>
+    <color name="endpurple">#9a96ea</color>
     <color name="layoutgray">#f2f3f7</color>
+    <color name="darkgray">#9c9c9c</color>
+    <color name="lightGray">#AFAFAF</color>
+    <color name="text_gray">#b4b4b4</color>
+    <color name="button_gray">#cbcbcb</color>
+    <color name="chat_background">#0DA9B3B8</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="color_red">#D80101</color>
+    <color name="pureWhite">#FFFFFF</color>
+
+    <color name="head">#424242</color>
+    <color name="green">#4fc6ad</color>
+    <color name="icon">#868686</color>
+    <color name="text_nav_color1">#454545</color>
+    <color name="rating_green">#47ddc2</color>
+    <color name="start_green">#6eda8e</color>
+    <color name="middle_green">#52d2a1</color>
+    <color name="end_green">#3dcdb4</color>
+    <color name="thumb_color">#cbd2e2</color>
+    <color name="track_color">#edeffb</color>
+    <color name="lightPurple">#c280ea</color>
+    <color name="button_primary">#33DE8C</color>
+    <color name="light_gray">#fefefe</color>
+
+    <color name="purple">#a565e1</color>
+    <color name="purple_light">#b5beec</color>
+    <color name="black_light">#AB000000</color>
+    <color name="button_color">#33de8c</color>
+    <color name="page_title">#4fc6ab</color>
+    <color name="danger">#ff3766</color>
+    <color name="light">#9d9d9d</color>
+    <color name="bodytext">#727272</color>
+    <color name="title_color">#4fc6ab</color>
+    <color name="start_button_color">#c4c4c4</color>
+    <color name="end_button_color">#cecece</color>
+    <color name="gender_button">#eff1f9</color>
+    <color name="start_button">#92da8f</color>
+    <color name="end_button">#46c4af</color>
+    <color name="light_green">#ecfde9</color>
+
+    <color name="chat_list_state_active_bg">#E9FFEA</color>
+    <color name="chat_list_state_active_text">#67BE87</color>
+    <color name="chat_list_state_active_circle">#67BE87</color>
+
+    <color name="chat_list_state_not_active_bg">#FAF8DE</color>
+    <color name="chat_list_state_not_active_text">#D5A05A</color>
+    <color name="chat_list_state_not_active_circle">#F1C851</color>
+    <color name="text_hint_color">#B0FFD5</color>
 
 
 </resources>

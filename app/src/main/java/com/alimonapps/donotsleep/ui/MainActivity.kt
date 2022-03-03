@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         //set bottom navigation
         navController = Navigation.findNavController(this, R.id.fragment)
-        binding.bottomNavigation.setupWithNavController(navController)
+//        binding.bottomNavigation.setupWithNavController(navController)
 
 
     }

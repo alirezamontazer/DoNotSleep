@@ -11,13 +11,14 @@ import com.alimonapps.donotsleep.R
 import com.alimonapps.donotsleep.databinding.RegisterBaseFragmentBinding
 import com.alimonapps.donotsleep.ui.login.step1.RegisterStep1Fragment
 import com.alimonapps.donotsleep.ui.login.step2.RegisterStep2Fragment
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val TAG = "RegisterBaseFragment"
 
 class RegisterBaseFragment : Fragment() {
 
-    private val viewModel: RegisterBaseViewModel by viewModel()
+    private val viewModel: RegisterBaseViewModel by sharedViewModel()
     private lateinit var binding: RegisterBaseFragmentBinding
 
 
@@ -69,14 +70,6 @@ class RegisterBaseFragment : Fragment() {
                 binding.registerViewPager.currentItem = it
             }
         }
-
-        viewModel.openMainActivity.observe(viewLifecycleOwner) {
-            if (it) {
-                // TODO: go to main activity
-            }
-
-        }
-
 
     }
 

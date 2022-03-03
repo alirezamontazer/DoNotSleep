@@ -15,8 +15,25 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/layoutgray"
         tools:context=".ui.login.base.RegisterBaseFragment">
+
+        <ImageView
+            android:id="@+id/img_background"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/background"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:alpha="0.7"
+            android:scaleType="centerCrop"
+            android:src="@drawable/forground"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -25,7 +42,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="40dp"
             android:text="Complete your information"
-            android:textColor="@color/green"
+            android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +77,7 @@
             app:layout_constraintStart_toStartOf="@+id/tv_title_2"
             app:layout_constraintTop_toBottomOf="@+id/tv_title"
             app:progressMode="false"
-            app:selectedDotColor="#33df8d" />
+            app:selectedDotColor="@color/color_red" />
 
 
         <com.alimonapps.donotsleep.ui.login.base.CustomViewPager
@@ -68,9 +85,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_below="@+id/dots_indicator"
-            android:layout_marginTop="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dots_indicator" />
+            app:layout_constraintTop_toBottomOf="@+id/img_background" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

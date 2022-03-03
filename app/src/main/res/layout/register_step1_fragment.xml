@@ -1,20 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.alimonapps.donotsleep.ui.login.step1.RegisterStep1ViewModel" />
+
     </data>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.login.step1.RegisterStep1Fragment">
+        android:background="#f7f8fc"
+        android:orientation="vertical"
+        android:weightSum="100">
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="step1" />
+            android:layout_height="0dp"
+            android:layout_weight="30">
 
-    </FrameLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="30dp"
+                android:text="@string/welcome_please_enter_your_phone_number"
+                android:textColor="@color/green"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="65">
+
+            <TextView
+                android:id="@+id/txtPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="30dp"
+                android:text="@string/phone_number"
+                android:textColor="#000"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <RelativeLayout
+                android:id="@+id/edit_phone"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@+id/txtPhone"
+                android:layout_margin="30dp"
+                android:background="@drawable/bg_pin">
+
+                <ImageView
+                    android:id="@+id/phone"
+                    android:layout_width="15dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="15dp"
+                    app:srcCompat="@drawable/ic_phone" />
+
+                <EditText
+                    android:id="@+id/mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_toEndOf="@+id/phone"
+                    android:background="@null"
+                    android:hint="@string/enter_your_phone_number"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:maxLength="11"
+                    android:text="@={viewModel.phoneNumber}"
+                    android:textAlignment="center"
+                    android:textColor="@color/black_light"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+
+
+            <ProgressBar
+                style="@style/AppTheme.WhiteAccent"
+                isInvisible="@{!viewModel.isShowLoading()}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/btn_receive"
+                android:layout_alignTop="@id/btn_receive"
+                android:layout_alignEnd="@+id/btn_receive"
+                android:layout_alignBottom="@+id/btn_receive"
+                android:background="@drawable/button_reg_corner"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/white"
+                android:indeterminateTintMode="src_in"
+                android:padding="15dp"
+                app:backgroundTint="@color/button_primary" />
+
+            <Button
+                android:id="@+id/btn_receive"
+                isInvisible="@{viewModel.isShowLoading()}"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@+id/edit_phone"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/button_reg_corner"
+                android:text="@string/register"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
 </layout>

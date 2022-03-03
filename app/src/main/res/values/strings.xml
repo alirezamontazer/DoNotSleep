@@ -3,4 +3,8 @@
     <string name="group_17_inc">Group 17 Inc.</string>
     <string name="home">Home</string>
     <string name="setting">Setting</string>
+    <string name="welcome_please_enter_your_phone_number">Welcome. Please enter your phone number</string>
+    <string name="phone_number">Phone number</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="register">Register</string>
 </resources>
