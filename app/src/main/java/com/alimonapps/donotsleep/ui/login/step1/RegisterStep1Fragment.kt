@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.alimonapps.donotsleep.databinding.RegisterStep1FragmentBinding
 import com.alimonapps.donotsleep.ui.login.base.RegisterBaseViewModel
+import com.alimonapps.donotsleep.utils.errorToast
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -37,9 +39,23 @@ class RegisterStep1Fragment : Fragment() {
 
     private fun clickOnRegister() {
         binding.btnReceive.setOnClickListener {
-            viewModel.isShowLoading.value = true
-            goToNextPage()
+            checkTextValidity()
+            if (checkTextValidity()) {
+                viewModel.isShowLoading.value = true
+                goToNextPage()
+            }
         }
+    }
+
+    private fun checkTextValidity(): Boolean {
+        val isTextCorrect: Boolean
+
+        if (viewModel.phoneNumber.value == "" || viewModel.phoneNumber.value!!.length < 10) {
+            isTextCorrect = false
+            errorToast("Phone number is not valid")
+        } else isTextCorrect = true
+
+        return isTextCorrect
     }
 
     private fun goToNextPage() {

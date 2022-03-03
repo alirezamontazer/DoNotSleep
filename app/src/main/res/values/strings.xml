@@ -7,4 +7,8 @@
     <string name="phone_number">Phone number</string>
     <string name="enter_your_phone_number">Enter your phone number</string>
     <string name="register">Register</string>
+    <string name="phone_emergency">Enter the phone number that you want to be contacted in case of emergency.</string>
+    <string name="complete_your_information">Complete your information</string>
+    <string name="multimedia_communications">Multimedia Communications</string>
+    <string name="group_17">Group 17</string>
 </resources>

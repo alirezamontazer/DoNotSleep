@@ -1,16 +1,28 @@
 package com.alimonapps.donotsleep
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.os.CountDownTimer
-import com.alimonapps.donotsleep.ui.MainActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.model.KeyPath
+import com.airbnb.lottie.value.SimpleLottieValueCallback
+import com.alimonapps.donotsleep.databinding.ActivitySplashBinding
 import com.alimonapps.donotsleep.ui.login.LoginActivity
 
 class SplashActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivitySplashBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
+        binding.lifecycleOwner = this
 
         setupCountDownTimer()
 

@@ -63,14 +63,7 @@
     <color name="end_button">#46c4af</color>
     <color name="light_green">#ecfde9</color>
 
-    <color name="chat_list_state_active_bg">#E9FFEA</color>
-    <color name="chat_list_state_active_text">#67BE87</color>
-    <color name="chat_list_state_active_circle">#67BE87</color>
-
-    <color name="chat_list_state_not_active_bg">#FAF8DE</color>
-    <color name="chat_list_state_not_active_text">#D5A05A</color>
-    <color name="chat_list_state_not_active_circle">#F1C851</color>
-    <color name="text_hint_color">#B0FFD5</color>
-
+    <color name="bg_toast_success">#388E3C</color>
+    <color name="bg_toast_error">#D32F2F</color>
 
 </resources>
