@@ -27,7 +27,6 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.MultiProcessor
 import com.google.android.gms.vision.face.FaceDetector
 import kotlinx.coroutines.*
-import org.koin.android.ext.android.bind
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -46,6 +45,9 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     private lateinit var eyesTracker: EyesTracker
     private var friendPhoneNumber: String = ""
     private var isAlarmSet = false
+    private var isOpenEyes = false
+    private var isNoFace = false
+    private var isCloseEyes = false
 
     private var flag = false
     private lateinit var cameraSource: CameraSource
@@ -163,25 +165,29 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     //Update view
     override fun onChangeEye(condition: Condition) {
+        myScope = CoroutineScope(Dispatchers.Main)
+
         when (condition) {
 
             // OPEN EYES
             Condition.USER_EYES_OPEN -> {
                 isAlarmSet = false
+                isNoFace = false
+                isCloseEyes = false
+                if (!isOpenEyes) openEyesVisibility()
                 setBackgroundGreen()
-                binding.tvDescription.text = getString(R.string.opened_eyes)
 
                 if (this::myScope.isInitialized) myScope.cancel()
                 if (isMediaPlayerStarted) mMediaPlayer.stop()
                 counter.postValue(0)
-
             }
 
             // CLOSED EYES
             Condition.USER_EYES_CLOSED -> {
-                myScope = CoroutineScope(Dispatchers.Main)
+                isNoFace = false
+                isOpenEyes = false
+                if (!isCloseEyes) closeEyesVisibility()
                 setBackgroundOrange()
-                binding.tvDescription.text = getString(R.string.closed_eyes)
 
                 counter.postValue(counter.value!!.plus(1))
                 Log.e(TAG, "updateMainView: ${counter.value}")
@@ -196,7 +202,10 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
                             if (t >= 100) {
                                 setBackgroundRed()
                                 mMediaPlayer.isLooping = true
-                                if (!isAlarmSet) sendSms()
+                                if (!isAlarmSet) {
+                                    sendSms()
+                                    alertIconVisibility()
+                                }
                             }
                             counter.removeObserver(this)
                         }
@@ -207,8 +216,10 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
             // FACE NOT DETECTED
             Condition.FACE_NOT_FOUND -> {
                 isAlarmSet = false
+                isCloseEyes = false
+                isOpenEyes = false
+                if (!isNoFace) noFaceVisibility()
                 setBackgroundGrey()
-                binding.tvDescription.text = getString(R.string.user_not_detected)
                 if (this::myScope.isInitialized) myScope.cancel()
                 if (isMediaPlayerStarted) mMediaPlayer.stop()
                 counter.postValue(0)
@@ -219,7 +230,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     private fun startMediaPlayer() {
         val voiceId: Int =
-            resources.getIdentifier("alarm", "raw", requireContext().packageName)
+            resources.getIdentifier("alarm2", "raw", requireContext().packageName)
         val voicePath =
             Uri.parse("android.resource://com.alimonapps.donotsleep/$voiceId")
         try {
@@ -236,22 +247,52 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         isMediaPlayerStarted = true
     }
 
-
     private fun setBackgroundGrey() {
-//        binding.imgNotFound.visibility = View.VISIBLE
-//        binding.imgCheck.visibility = View.INVISIBLE
-//        binding.imgWarning.visibility = View.INVISIBLE
-//        binding.imgDanger.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
 
     }
 
     private fun setBackgroundRed() {
-//        binding.imgDanger.visibility = View.VISIBLE
-//        binding.imgWarning.visibility = View.INVISIBLE
-//        binding.imgCheck.visibility = View.INVISIBLE
-//        binding.imgNotFound.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_red_dark))
+    }
+
+    private fun setBackgroundOrange() {
+        binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_orange_dark))
+    }
+
+    private fun setBackgroundGreen() {
+        binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
+    }
+
+    private fun openEyesVisibility() {
+        activity?.runOnUiThread {
+            binding.tvDescription.text = getString(R.string.opened_eyes)
+            binding.imgCheck.visibility = View.VISIBLE
+            binding.imgNotFound.visibility = View.INVISIBLE
+            binding.imgWarning.visibility = View.INVISIBLE
+            binding.imgDanger.visibility = View.INVISIBLE
+            isOpenEyes = true
+        }
+    }
+
+    private fun closeEyesVisibility() {
+        activity?.runOnUiThread {
+            binding.tvDescription.text = getString(R.string.closed_eyes)
+            binding.imgWarning.visibility = View.VISIBLE
+            binding.imgCheck.visibility = View.INVISIBLE
+            binding.imgNotFound.visibility = View.INVISIBLE
+            binding.imgDanger.visibility = View.INVISIBLE
+            isCloseEyes = true
+        }
+    }
+
+    private fun alertIconVisibility() {
+        activity?.runOnUiThread {
+            binding.imgDanger.visibility = View.VISIBLE
+            binding.imgWarning.visibility = View.INVISIBLE
+            binding.imgCheck.visibility = View.INVISIBLE
+            binding.imgNotFound.visibility = View.INVISIBLE
+        }
     }
 
     private fun sendSms() {
@@ -265,20 +306,15 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         isAlarmSet = true
     }
 
-    private fun setBackgroundOrange() {
-//        binding.imgWarning.visibility = View.VISIBLE
-//        binding.imgCheck.visibility = View.INVISIBLE
-//        binding.imgNotFound.visibility = View.INVISIBLE
-//        binding.imgDanger.visibility = View.INVISIBLE
-        binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_orange_dark))
-    }
-
-    private fun setBackgroundGreen() {
-//        binding.imgCheck.visibility = View.VISIBLE
-//        binding.imgNotFound.visibility = View.INVISIBLE
-//        binding.imgWarning.visibility = View.INVISIBLE
-//        binding.imgDanger.visibility = View.INVISIBLE
-        binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
+    private fun noFaceVisibility() {
+        activity?.runOnUiThread {
+            binding.tvDescription.text = getString(R.string.user_not_detected)
+            binding.imgNotFound.visibility = View.VISIBLE
+            binding.imgCheck.visibility = View.INVISIBLE
+            binding.imgWarning.visibility = View.INVISIBLE
+            binding.imgDanger.visibility = View.INVISIBLE
+            isNoFace = true
+        }
     }
 
     override fun onResume() {
@@ -314,24 +350,15 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     override fun onStop() {
         super.onStop()
-        setBackgroundGrey()
-        binding.tvDescription.text = getString(R.string.app_start)
-        binding.imgNotFound.visibility = View.VISIBLE
-        if (this::cameraSource.isInitialized) cameraSource.stop()
-        if (this::myScope.isInitialized) myScope.cancel()
-        if (isMediaPlayerStarted) mMediaPlayer.stop()
+        pauseApp()
 
     }
 
     override fun onPause() {
         super.onPause()
-        setBackgroundGrey()
-        binding.tvDescription.text = getString(R.string.app_start)
-        binding.imgNotFound.visibility = View.VISIBLE
-        if (this::cameraSource.isInitialized) cameraSource.stop()
-        if (this::myScope.isInitialized) myScope.cancel()
-        mMediaPlayer.stop()
+        pauseApp()
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -341,6 +368,16 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
             mMediaPlayer.stop()
             mMediaPlayer.release()
         }
+    }
+
+    private fun pauseApp() {
+        setBackgroundGrey()
+        noFaceVisibility()
+        binding.loadingLottie.visibility = View.INVISIBLE
+        binding.tvDescription.text = getString(R.string.app_start)
+        if (this::cameraSource.isInitialized) cameraSource.stop()
+        if (this::myScope.isInitialized) myScope.cancel()
+        if (isMediaPlayerStarted) mMediaPlayer.stop()
     }
 
     override fun onRequestPermissionsResult(
