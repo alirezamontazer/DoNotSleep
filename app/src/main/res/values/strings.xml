@@ -11,6 +11,11 @@
     <string name="complete_your_information">Complete your information</string>
     <string name="multimedia_communications">Multimedia Communications</string>
     <string name="group_17">Group 17</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="start">START</string>
+    <string name="app_start">By pressing the button the app starts to detecting your face</string>
+    <string name="opened_eyes">Open eyes detected</string>
+    <string name="closed_eyes">It seems your eyes are closed</string>
+    <string name="user_not_detected">Face not detected</string>
 </resources>

@@ -17,12 +17,15 @@ import androidx.lifecycle.Observer
 import com.alimonapps.donotsleep.Condition
 import com.alimonapps.donotsleep.EyesTracker
 import com.alimonapps.donotsleep.FaceTrackerDaemon
+import com.alimonapps.donotsleep.R
 import com.alimonapps.donotsleep.databinding.HomeFragmentBinding
 import com.alimonapps.donotsleep.ui.MainViewModel
+import com.alimonapps.donotsleep.utils.errorToast
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.MultiProcessor
 import com.google.android.gms.vision.face.FaceDetector
 import kotlinx.coroutines.*
+import org.koin.android.ext.android.bind
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -38,8 +41,6 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     private var isMediaPlayerStarted = false
     private lateinit var binding: HomeFragmentBinding
     private lateinit var eyesTracker: EyesTracker
-    private var myDisplayTime: Long = 500
-    private var myRestTime: Long = 500
 
 
     private var flag = false
@@ -57,8 +58,6 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         binding.viewModel = viewModel
         eyesTracker = EyesTracker(this)
 
-        Log.e(TAG, "onCreate: on create oomad")
-
         clickOnStartButton()
 
         return binding.root
@@ -69,6 +68,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     private fun clickOnStartButton() {
         binding.button2.setOnClickListener {
             requestPermission()
+            binding.loadingLottie.visibility = View.VISIBLE
         }
     }
 
@@ -91,7 +91,6 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     private fun initApp() {
         flag = true
         initCameraSource()
-
     }
 
     //Method to create camera source from faceFactoryDaemon class
@@ -134,7 +133,8 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         when (condition) {
             Condition.USER_EYES_OPEN -> {
                 setBackgroundGreen()
-                binding.userText.text = "Open eyes detected"
+                binding.tvDescription.text = getString(R.string.opened_eyes)
+
                 if (this::myScope.isInitialized) myScope.cancel()
                 if (isMediaPlayerStarted) mMediaPlayer.stop()
                 counter.postValue(0)
@@ -143,7 +143,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
             Condition.USER_EYES_CLOSED -> {
                 myScope = CoroutineScope(Dispatchers.Main)
                 setBackgroundOrange()
-                binding.userText.text = "Close eyes detected"
+                binding.tvDescription.text = getString(R.string.closed_eyes)
 
                 counter.postValue(counter.value!!.plus(1))
                 Log.e(TAG, "updateMainView: ${counter.value}")
@@ -152,8 +152,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
                     counter.observe(viewLifecycleOwner, object : Observer<Int> {
                         override fun onChanged(t: Int) {
                             if (t == 100) {
-                                Toast.makeText(requireContext(), "WAKE UP!", Toast.LENGTH_SHORT)
-                                    .show()
+                                errorToast("WAKE UP !!!")
                                 startMediaPlayer()
                             }
                             if (t >= 100) {
@@ -167,7 +166,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
             }
             Condition.FACE_NOT_FOUND -> {
                 setBackgroundGrey()
-                binding.userText.text = "User not found"
+                binding.tvDescription.text = getString(R.string.user_not_detected)
                 if (this::myScope.isInitialized) myScope.cancel()
                 if (isMediaPlayerStarted) mMediaPlayer.stop()
                 counter.postValue(0)
@@ -197,24 +196,40 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
 
     private fun setBackgroundGrey() {
+        binding.imgNotFound.visibility = View.VISIBLE
+        binding.imgCheck.visibility = View.INVISIBLE
+        binding.imgWarning.visibility = View.INVISIBLE
+        binding.imgDanger.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
+
     }
 
     private fun setBackgroundRed() {
+        binding.imgDanger.visibility = View.VISIBLE
+        binding.imgWarning.visibility = View.INVISIBLE
+        binding.imgCheck.visibility = View.INVISIBLE
+        binding.imgNotFound.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_red_dark))
     }
 
     private fun setBackgroundOrange() {
+        binding.imgWarning.visibility = View.VISIBLE
+        binding.imgCheck.visibility = View.INVISIBLE
+        binding.imgNotFound.visibility = View.INVISIBLE
+        binding.imgDanger.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_orange_dark))
     }
 
     private fun setBackgroundGreen() {
+        binding.imgCheck.visibility = View.VISIBLE
+        binding.imgNotFound.visibility = View.INVISIBLE
+        binding.imgWarning.visibility = View.INVISIBLE
+        binding.imgDanger.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
     }
 
     override fun onResume() {
         super.onResume()
-        Log.e(TAG, "onResume: on resume oomad")
         try {
             if (ActivityCompat.checkSelfPermission(
                     requireContext(),
@@ -231,7 +246,6 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     override fun onStart() {
         super.onStart()
-        Log.e(TAG, "onStart: on start oomad")
         try {
             if (ActivityCompat.checkSelfPermission(
                     requireContext(),
@@ -247,6 +261,9 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     override fun onStop() {
         super.onStop()
+        setBackgroundGrey()
+        binding.tvDescription.text = getString(R.string.app_start)
+        binding.imgNotFound.visibility = View.VISIBLE
         if (this::cameraSource.isInitialized) cameraSource.stop()
         if (this::myScope.isInitialized) myScope.cancel()
         if (isMediaPlayerStarted) mMediaPlayer.stop()
@@ -255,6 +272,9 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     override fun onPause() {
         super.onPause()
+        setBackgroundGrey()
+        binding.tvDescription.text = getString(R.string.app_start)
+        binding.imgNotFound.visibility = View.VISIBLE
         if (this::cameraSource.isInitialized) cameraSource.stop()
         if (this::myScope.isInitialized) myScope.cancel()
         mMediaPlayer.stop()
@@ -262,7 +282,6 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     override fun onDestroy() {
         super.onDestroy()
-
         if (this::cameraSource.isInitialized) cameraSource.release()
         if (this::cameraSource.isInitialized) cameraSource.stop()
         if (isMediaPlayerStarted) {

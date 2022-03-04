@@ -65,5 +65,6 @@
 
     <color name="bg_toast_success">#388E3C</color>
     <color name="bg_toast_error">#D32F2F</color>
+    <color name="main_back_color">#f7f8fc</color>
 
 </resources>
