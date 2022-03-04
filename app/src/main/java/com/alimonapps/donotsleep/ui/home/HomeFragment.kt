@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -45,7 +46,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     private var flag = false
     private lateinit var cameraSource: CameraSource
-    private val CAMERA_RQ = 101
+    private val PERMISSION_RQ_CODE = 101
     private lateinit var myScope: CoroutineScope
     var counter = MutableLiveData(0)
 
@@ -73,19 +74,42 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     }
 
     private fun requestPermission() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (!checkPermissionFromDevice()) {
             ActivityCompat.requestPermissions(
                 requireActivity(),
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_RQ
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.SEND_SMS,
+                    Manifest.permission.RECEIVE_SMS
+                ),
+                PERMISSION_RQ_CODE
             )
         } else {
             initApp()
         }
+    }
+
+    private fun checkPermissionFromDevice(): Boolean {
+
+        val cameraPermissionResult = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.CAMERA
+        )
+
+        val sendSmsResult = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.SEND_SMS
+        )
+
+        val receiveSmsResult = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.RECEIVE_SMS
+        )
+
+        return cameraPermissionResult == PackageManager.PERMISSION_GRANTED
+                && sendSmsResult == PackageManager.PERMISSION_GRANTED
+                && receiveSmsResult == PackageManager.PERMISSION_GRANTED
+
     }
 
     private fun initApp() {
@@ -307,7 +331,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
 
         when (requestCode) {
-            CAMERA_RQ -> innerCheck("camera")
+            PERMISSION_RQ_CODE -> innerCheck("camera")
         }
     }
 
