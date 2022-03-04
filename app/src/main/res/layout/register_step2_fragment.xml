@@ -33,7 +33,7 @@
                 android:layout_marginBottom="30dp"
                 android:text="@string/phone_emergency"
                 android:textColor="@color/green"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </RelativeLayout>
 

@@ -26,7 +26,10 @@ import com.alimonapps.donotsleep.utils.errorToast
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.MultiProcessor
 import com.google.android.gms.vision.face.FaceDetector
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -203,8 +206,8 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
                                 setBackgroundRed()
                                 mMediaPlayer.isLooping = true
                                 if (!isAlarmSet) {
-                                    sendSms()
                                     alertIconVisibility()
+                                    sendSms()
                                 }
                             }
                             counter.removeObserver(this)
@@ -292,19 +295,24 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
             binding.imgWarning.visibility = View.INVISIBLE
             binding.imgCheck.visibility = View.INVISIBLE
             binding.imgNotFound.visibility = View.INVISIBLE
+            isAlarmSet = true
         }
     }
 
     private fun sendSms() {
-        smsManager.sendTextMessage(
-            friendPhoneNumber,
-            null,
-            "HELP ME !!!",
-            null,
-            null
-        )
-        isAlarmSet = true
+        try {
+            smsManager.sendTextMessage(
+                friendPhoneNumber,
+                null,
+                "HELP ME !!!",
+                null,
+                null
+            )
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
+
 
     private fun noFaceVisibility() {
         activity?.runOnUiThread {
