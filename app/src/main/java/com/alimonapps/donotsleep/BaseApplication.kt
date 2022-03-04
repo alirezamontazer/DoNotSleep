@@ -3,6 +3,7 @@ package com.alimonapps.donotsleep
 import android.app.Application
 import android.content.Context
 import com.alimonapps.donotsleep.di.appModule
+import com.alimonapps.donotsleep.di.storeModules
 import com.alimonapps.donotsleep.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -30,7 +31,7 @@ class BaseApplication : Application() {
         startKoin {
             androidLogger(Level.ERROR)
             androidContext(this@BaseApplication)
-            modules(listOf(appModule, viewModelModule))
+            modules(listOf(appModule, storeModules, viewModelModule))
         }
 
     }

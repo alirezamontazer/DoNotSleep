@@ -43,6 +43,7 @@ class RegisterStep1Fragment : Fragment() {
             Log.e(TAG, "clickOnRegister: ${viewModel.phoneNumber.value}")
             if (checkTextValidity()) {
                 viewModel.isShowLoading.value = true
+                viewModel.savePhoneNumber()
                 goToNextPage()
             }
         }

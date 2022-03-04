@@ -42,6 +42,8 @@ class RegisterStep2Fragment : Fragment() {
             Log.e(TAG, "step2 number: ${viewModel.phoneNumberEmergency.value}")
             if (checkTextValidity()) {
                 viewModel.isShowLoading.value = true
+                viewModel.savePhoneNumber()
+                viewModel.saveLoggedIn(true)
                 goToNextPage()
             }
 

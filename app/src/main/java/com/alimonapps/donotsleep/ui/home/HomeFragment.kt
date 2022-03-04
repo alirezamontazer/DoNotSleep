@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.telephony.SmsManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -39,10 +40,12 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     private val viewModel: HomeViewModel by viewModel()
     private val sharedViewMode: MainViewModel by sharedViewModel()
     private val mMediaPlayer: MediaPlayer by inject()
+    private val smsManager: SmsManager by inject()
     private var isMediaPlayerStarted = false
     private lateinit var binding: HomeFragmentBinding
     private lateinit var eyesTracker: EyesTracker
-
+    private var friendPhoneNumber: String = ""
+    private var isAlarmSet = false
 
     private var flag = false
     private lateinit var cameraSource: CameraSource
@@ -59,10 +62,16 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         binding.viewModel = viewModel
         eyesTracker = EyesTracker(this)
 
+        loadPhoneNumbers()
         clickOnStartButton()
 
         return binding.root
 
+    }
+
+    private fun loadPhoneNumbers() {
+        friendPhoneNumber = viewModel.loadPhoneNumber()
+        Log.e(TAG, "loadPhoneNumbers: $friendPhoneNumber")
     }
 
 
@@ -155,7 +164,10 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     //Update view
     override fun onChangeEye(condition: Condition) {
         when (condition) {
+
+            // OPEN EYES
             Condition.USER_EYES_OPEN -> {
+                isAlarmSet = false
                 setBackgroundGreen()
                 binding.tvDescription.text = getString(R.string.opened_eyes)
 
@@ -164,6 +176,8 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
                 counter.postValue(0)
 
             }
+
+            // CLOSED EYES
             Condition.USER_EYES_CLOSED -> {
                 myScope = CoroutineScope(Dispatchers.Main)
                 setBackgroundOrange()
@@ -182,13 +196,17 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
                             if (t >= 100) {
                                 setBackgroundRed()
                                 mMediaPlayer.isLooping = true
+                                if (!isAlarmSet) sendSms()
                             }
                             counter.removeObserver(this)
                         }
                     })
                 }
             }
+
+            // FACE NOT DETECTED
             Condition.FACE_NOT_FOUND -> {
+                isAlarmSet = false
                 setBackgroundGrey()
                 binding.tvDescription.text = getString(R.string.user_not_detected)
                 if (this::myScope.isInitialized) myScope.cancel()
@@ -220,35 +238,46 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
 
     private fun setBackgroundGrey() {
-        binding.imgNotFound.visibility = View.VISIBLE
-        binding.imgCheck.visibility = View.INVISIBLE
-        binding.imgWarning.visibility = View.INVISIBLE
-        binding.imgDanger.visibility = View.INVISIBLE
+//        binding.imgNotFound.visibility = View.VISIBLE
+//        binding.imgCheck.visibility = View.INVISIBLE
+//        binding.imgWarning.visibility = View.INVISIBLE
+//        binding.imgDanger.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
 
     }
 
     private fun setBackgroundRed() {
-        binding.imgDanger.visibility = View.VISIBLE
-        binding.imgWarning.visibility = View.INVISIBLE
-        binding.imgCheck.visibility = View.INVISIBLE
-        binding.imgNotFound.visibility = View.INVISIBLE
+//        binding.imgDanger.visibility = View.VISIBLE
+//        binding.imgWarning.visibility = View.INVISIBLE
+//        binding.imgCheck.visibility = View.INVISIBLE
+//        binding.imgNotFound.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_red_dark))
     }
 
+    private fun sendSms() {
+        smsManager.sendTextMessage(
+            friendPhoneNumber,
+            null,
+            "HELP ME !!!",
+            null,
+            null
+        )
+        isAlarmSet = true
+    }
+
     private fun setBackgroundOrange() {
-        binding.imgWarning.visibility = View.VISIBLE
-        binding.imgCheck.visibility = View.INVISIBLE
-        binding.imgNotFound.visibility = View.INVISIBLE
-        binding.imgDanger.visibility = View.INVISIBLE
+//        binding.imgWarning.visibility = View.VISIBLE
+//        binding.imgCheck.visibility = View.INVISIBLE
+//        binding.imgNotFound.visibility = View.INVISIBLE
+//        binding.imgDanger.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_orange_dark))
     }
 
     private fun setBackgroundGreen() {
-        binding.imgCheck.visibility = View.VISIBLE
-        binding.imgNotFound.visibility = View.INVISIBLE
-        binding.imgWarning.visibility = View.INVISIBLE
-        binding.imgDanger.visibility = View.INVISIBLE
+//        binding.imgCheck.visibility = View.VISIBLE
+//        binding.imgNotFound.visibility = View.INVISIBLE
+//        binding.imgWarning.visibility = View.INVISIBLE
+//        binding.imgDanger.visibility = View.INVISIBLE
         binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
     }
 
