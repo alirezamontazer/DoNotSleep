@@ -2,6 +2,11 @@ package com.alimonapps.donotsleep.utils
 
 import android.content.SharedPreferences
 
+/** Alireza Montazeralzohour - Mohsen Shahbazi
+ * This file provides sharedPreferences in the app which we can save the information
+ * that user puts in such as phone numbers and is user logged in or not.
+ */
+
 class SharedPrefs(private val mPreferences: SharedPreferences) {
 
     companion object {

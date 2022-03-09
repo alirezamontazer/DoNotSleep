@@ -35,6 +35,15 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
 
+/** Alireza Montazeralzohour
+ * This is the main page that gets the data from FaceTrackerDaemon and displays
+ * that data on the phone's screen. In this file first we get the user's permissions
+ * for accessing camera and sending text messages. Next initializing the face detector
+ * with FaceTrackerDaemon and camera source. We used Android Coroutines in order to handle
+ * the data from background thread and show on UI thread. Also we used MutableLiveData class
+ * for calculating the time that user closed his or her eyes.
+ */
+
 private const val TAG = "HomeFragment"
 
 class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
@@ -74,12 +83,14 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     }
 
+    // Loading Receiver phone number from sharedPreferences
     private fun loadPhoneNumbers() {
         friendPhoneNumber = viewModel.loadPhoneNumber()
         Log.e(TAG, "loadPhoneNumbers: $friendPhoneNumber")
     }
 
 
+    // By clicking on start button the app starts working
     private fun clickOnStartButton() {
         binding.button2.setOnClickListener {
             requestPermission()
@@ -87,6 +98,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
+    // Requesting camera and send and receive sms permission from the user
     private fun requestPermission() {
         if (!checkPermissionFromDevice()) {
             ActivityCompat.requestPermissions(
@@ -103,6 +115,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
+    // Checking permissions to see the user permitted for accessing the camera and sending sms
     private fun checkPermissionFromDevice(): Boolean {
 
         val cameraPermissionResult = ContextCompat.checkSelfPermission(
@@ -126,6 +139,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     }
 
+    // if the permissions granted, the face tracking can start working
     private fun initApp() {
         flag = true
         initCameraSource()
@@ -166,7 +180,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
-    //Update view
+    // This is the interface that gets the data from EyeTracker class and handles the data
     override fun onChangeEye(condition: Condition) {
         myScope = CoroutineScope(Dispatchers.Main)
 
@@ -231,6 +245,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
+    // Sound alarm
     private fun startMediaPlayer() {
         val voiceId: Int =
             resources.getIdentifier("alarm2", "raw", requireContext().packageName)
@@ -252,7 +267,6 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     private fun setBackgroundGrey() {
         binding.background.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
-
     }
 
     private fun setBackgroundRed() {
@@ -267,6 +281,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         binding.background.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
     }
 
+    // Changing the icons on the screen if eyes are open
     private fun openEyesVisibility() {
         activity?.runOnUiThread {
             binding.tvDescription.text = getString(R.string.opened_eyes)
@@ -278,6 +293,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
+    // Changing the icons on the screen if eyes are closed
     private fun closeEyesVisibility() {
         activity?.runOnUiThread {
             binding.tvDescription.text = getString(R.string.closed_eyes)
@@ -289,6 +305,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
+    // Changing the icons on the screen if eyes are closed for a long time
     private fun alertIconVisibility() {
         activity?.runOnUiThread {
             binding.imgDanger.visibility = View.VISIBLE
@@ -299,6 +316,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
+    // Sending Sms
     private fun sendSms() {
         try {
             smsManager.sendTextMessage(
@@ -313,7 +331,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
-
+    // Changing the icons on the screen if user not detected
     private fun noFaceVisibility() {
         activity?.runOnUiThread {
             binding.tvDescription.text = getString(R.string.user_not_detected)
@@ -325,6 +343,8 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         }
     }
 
+
+    // onResume called when the app starts working after a pause
     override fun onResume() {
         super.onResume()
         try {
@@ -341,6 +361,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
 
     }
 
+    // onStart called when the app starts
     override fun onStart() {
         super.onStart()
         try {
@@ -368,6 +389,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
     }
 
 
+    // onDestroy called when the app ends
     override fun onDestroy() {
         super.onDestroy()
         if (this::cameraSource.isInitialized) cameraSource.release()
@@ -388,6 +410,7 @@ class HomeFragment : Fragment(), EyesTracker.OnChangeEyeExpression {
         if (isMediaPlayerStarted) mMediaPlayer.stop()
     }
 
+    // After getting permissions the app continuous working
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

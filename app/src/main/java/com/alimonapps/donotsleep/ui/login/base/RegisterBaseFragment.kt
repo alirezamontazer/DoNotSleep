@@ -16,6 +16,13 @@ import com.alimonapps.donotsleep.ui.login.step2.RegisterStep2Fragment
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+/**
+ * Alireza Montazeralzohour - Mohsen Shahbazi
+ * Register base fragment that sets up view pager for navigation from step 1 registration
+ * page to step 2. Also observing live data that comes from step 2 if the registration is
+ * completed and navigating to Main activity.
+ */
+
 private const val TAG = "RegisterBaseFragment"
 
 class RegisterBaseFragment : Fragment() {

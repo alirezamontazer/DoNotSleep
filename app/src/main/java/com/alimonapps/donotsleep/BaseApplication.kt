@@ -10,6 +10,11 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 
+/** Alireza Montazeralzohour
+ * BaseApplication file is the first file that is run when you open the app on Android device.
+ * In this file Koin dependency injection is initiated, also providing applicationContext for the
+ * whole app even in classes that are not a part of android files.
+ */
 
 class BaseApplication : Application() {
 

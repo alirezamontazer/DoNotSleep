@@ -10,6 +10,10 @@ import com.alimonapps.donotsleep.R
 import com.alimonapps.donotsleep.databinding.ActivityMainBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+/** Mohsen Shahbazi
+ * This is the main activity which is the holder of home fragment
+ */
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
@@ -24,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        //set bottom navigation
+        //setting up navigation controller for future updates
         navController = Navigation.findNavController(this, R.id.fragment)
 //        binding.bottomNavigation.setupWithNavController(navController)
 

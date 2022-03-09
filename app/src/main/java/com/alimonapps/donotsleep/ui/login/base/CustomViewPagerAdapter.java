@@ -7,6 +7,11 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Alireza Montazeralzohour - Mohsen Shahbazi
+ * custom view pager adapter that controls the step 1 and step 2 pages
+ */
+
 public class CustomViewPagerAdapter extends FragmentPagerAdapter {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();

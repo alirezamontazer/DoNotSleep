@@ -7,8 +7,10 @@ import android.view.MotionEvent;
 import androidx.viewpager.widget.ViewPager;
 
 /**
+ * Alireza Montazeralzohour - Mohsen Shahbazi
  * custom view pager class that allow disable user swiping
  */
+
 public class CustomViewPager extends ViewPager {
 
     private boolean isPagingEnabled = true;

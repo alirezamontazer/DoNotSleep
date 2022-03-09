@@ -12,6 +12,10 @@ import com.alimonapps.donotsleep.utils.provideSharedPrefs
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
+/** Alireza Montazeralzohour
+ * Providing modules for Koin dependency injection
+ */
+
 val appModule = module {
     factory { provideMediaPlayer() }
     single { provideSmsManager() }

@@ -11,6 +11,8 @@ import com.alimonapps.donotsleep.databinding.HomeFragmentBinding
 import com.alimonapps.donotsleep.databinding.SettingFragmentBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+// This class is empty for now and it's not in the app. This is for future updates
+
 class SettingFragment : Fragment() {
 
     private val viewModel: SettingViewModel by viewModel()

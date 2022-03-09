@@ -14,6 +14,11 @@ import com.alimonapps.donotsleep.utils.errorToast
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+/**
+ * Alireza Montazeralzohour - Mohsen Shahbazi
+ * Step 1 registration page which accepts the user's phone number
+ */
+
 private const val TAG = "RegisterStep1Fragment"
 
 class RegisterStep1Fragment : Fragment() {
@@ -37,6 +42,7 @@ class RegisterStep1Fragment : Fragment() {
         return binding.root
     }
 
+    // Click on register button
     private fun clickOnRegister() {
         binding.btnReceive.setOnClickListener {
             checkTextValidity()
@@ -49,6 +55,7 @@ class RegisterStep1Fragment : Fragment() {
         }
     }
 
+    // Check the validity of phone number
     private fun checkTextValidity(): Boolean {
         val isTextCorrect: Boolean
 
@@ -60,6 +67,7 @@ class RegisterStep1Fragment : Fragment() {
         return isTextCorrect
     }
 
+    // If the number is correct, directs to the step 2 registration page
     private fun goToNextPage() {
         countDownTimer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {

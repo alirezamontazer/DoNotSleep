@@ -12,6 +12,10 @@ import com.alimonapps.donotsleep.BaseApplication
 import com.alimonapps.donotsleep.BaseApplication.Companion.applicationContext
 import com.alimonapps.donotsleep.R
 
+/** Mohsen Shahbazi
+ * This file creates a nice custom toast message which shows the error or success messages.
+ */
+
 var WIDTH = -1
 
 fun successToast(msg: String) {

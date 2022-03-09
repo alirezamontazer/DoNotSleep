@@ -5,6 +5,13 @@ import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.Tracker
 import com.google.android.gms.vision.face.Face
 
+/** Alireza Montazeralzohour
+ * This file is the eye tracker which is provided by Google Cloud Vision API.
+ * It detects the face and different eyes expression.
+ * It has 3 different states: eyes open, closed and user not detected.
+ * and sends the data with onChangeEyeExpression interface to home fragment.
+ */
+
 private const val TAG = "EyesTracker"
 
 class EyesTracker(private val onChangeEyeExpression: OnChangeEyeExpression) : Tracker<Face>() {

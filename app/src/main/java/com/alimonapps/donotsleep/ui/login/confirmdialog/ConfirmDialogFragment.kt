@@ -16,6 +16,10 @@ import com.alimonapps.donotsleep.databinding.FragmentConfirmDialogBinding
 import com.alimonapps.donotsleep.ui.MainActivity
 import com.alimonapps.donotsleep.ui.login.LoginActivity
 
+/**
+ * Alireza Montazeralzohour - Mohsen Shahbazi
+ * Custom dialog fragment which pops up if the user completed the registration.
+ */
 
 class ConfirmDialogFragment : DialogFragment() {
 

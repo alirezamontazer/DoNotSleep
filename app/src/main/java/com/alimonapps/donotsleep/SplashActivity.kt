@@ -17,6 +17,13 @@ import com.alimonapps.donotsleep.ui.MainActivity
 import com.alimonapps.donotsleep.ui.login.LoginActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+/** Mohsen Shahbazi
+ * This is the Splash Activity file which is the first page of the app.
+ * In this page loading is shown, and it checks if the user logged in or not.
+ * If the user logged in, when he opens the app for the second time, registration
+ * Page will not show up.
+ */
+
 class SplashActivity : AppCompatActivity() {
 
     private val viewModel: SplashViewModel by viewModel()
@@ -33,10 +40,12 @@ class SplashActivity : AppCompatActivity() {
 
     }
 
+    // Check user logged in or not
     private fun loadIsLoggedIn() {
         isLoggedIn = viewModel.loadIsLoggedIn()
     }
 
+    // Go to Login page or main page based on user logged in or not
     private fun setupCountDownTimer() {
         val timer = object : CountDownTimer(4000, 1000) {
             override fun onTick(p0: Long) {
